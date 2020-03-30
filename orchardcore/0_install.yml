@@ -1,0 +1,58 @@
+---
+
+- hosts: all
+  become: true
+  vars_files:
+    - vars.yml
+
+  tasks:
+
+  - name: Get the platform (i386 or amd64) of the virtual machine
+    command: dpkg --print-architecture
+    register: print_architecture
+
+  - name: And set the actual platform value as a variable
+    set_fact:
+      platform: "{{ print_architecture.stdout }}"
+
+  - name: Update and upgrade apt packages (SLOW)
+    apt:
+      upgrade: safe
+      update_cache: yes
+      cache_valid_time: 86400 #One day
+
+  - name: Install packages for orchardcore and ansible
+    apt:
+      pkg:
+      - unzip
+      - vim
+      - curl
+      - expect
+      - python-pexpect
+      - python-pip
+      - docker.io
+      - git
+
+  - name: Make sure docker autostarts and is started
+    service: name=docker enabled=yes state=started
+
+  - name: Install docker for python to handle docker from ansible
+    pip: 
+      name:
+        - docker
+        - jsondiff
+
+  - name: Get a Orchard Core container
+    docker_container:
+      name: myorchard
+      image: orchardproject/orchardcore-cms-linux
+      state: started
+      restart_policy: always
+      published_ports:
+        - 0.0.0.0:80:80
+
+  - name: Wait for orchardstack stack to start
+    wait_for:
+      port: 80
+      delay: 5
+
