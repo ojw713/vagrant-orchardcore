@@ -13,3 +13,13 @@ If more than the default 10GB disk space is needed
 ## OrchardCore
 
 Access at [http://127.0.0.1:8077](http://127.0.0.1:8077).
+
+## Postgres DB Connection
+
+Access at [http://127.0.0.1:5432](http://127.0.0.1:5432).
+
+Default password containted in the `vars.yml` [file](https://raw.githubusercontent.com/ojw713/vagrant-orchardcore/master/orchardcore/vars.yml).
+
+If the default settings are not changed this conneciton string can be used:
+
+`Server=db;Port=5432;Database=orchard;User Id=postgres;Password=bshpassword`

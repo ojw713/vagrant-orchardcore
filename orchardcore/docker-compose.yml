@@ -1,0 +1,36 @@
+version: "3.3"
+
+services: 
+  db:
+    image: postgres
+    deploy:
+      replicas: 1
+    networks:
+      - orchard-network
+    ports:
+    volumes:
+      - db-vol:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_PASSWORD: example
+      POSTGRES_DB: orchard
+
+  orchard:
+    image: orchardproject/orchardcore-cms-linux
+    networks:
+      - orchard-network
+    ports:
+      - "80:80"
+    environment:
+      ORCHARD_APP_DATA: /orchardcore/App_Data
+
+volumes:
+  db-vol:
+
+networks:
+  orchard-network:
+    driver: overlay
+    driver_opts:
+      encrypted: ""
+    internal: true

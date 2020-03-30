@@ -12,6 +12,7 @@ Vagrant.configure(2) do |config|
         ubuntu.vm.hostname = "orchardcore"
 
         ubuntu.vm.network :forwarded_port, guest: 80, host: 8077
+        ubuntu.vm.network :forwarded_port, guest: 5432, host: 5432
 
         ubuntu.vm.synced_folder "orchardcore/", "/orchardcore/"
     end

@@ -15,13 +15,13 @@
     set_fact:
       platform: "{{ print_architecture.stdout }}"
 
-  - name: Update and upgrade apt packages (SLOW)
+  - name: Update and upgrade apt packages
     apt:
       upgrade: safe
       update_cache: yes
       cache_valid_time: 86400 #One day
 
-  - name: Install packages for orchardcore and ansible
+  - name: Install packages for orchardcore and ansible (SLOW)
     apt:
       pkg:
       - unzip
@@ -42,16 +42,29 @@
         - docker
         - jsondiff
 
-  - name: Get a Orchard Core container
-    docker_container:
-      name: myorchard
-      image: orchardproject/orchardcore-cms-linux
-      state: started
-      restart_policy: always
-      published_ports:
-        - 0.0.0.0:80:80
+  - name: Copy the docker-compose file
+    template:
+      src: /orchardcore/docker-compose.yml
+      dest: /usr/local
 
-  - name: Wait for orchardstack stack to start
+  - name: Set db password
+    lineinfile:
+      path: /usr/local/docker-compose.yml
+      regexp: 'POSTGRES_PASSWORD: example'
+      line: '      POSTGRES_PASSWORD: {{ postgrespassword }}'
+
+  - name: Initialize a new swarm with default parameters
+    docker_swarm:
+      state: present
+
+  - name: Deploy orchardcore docker stack
+    docker_stack:
+      state: present
+      name: orchardcore
+      compose:
+        - /usr/local/docker-compose.yml
+
+  - name: Wait for orchardcore stack to start
     wait_for:
       port: 80
       delay: 5
