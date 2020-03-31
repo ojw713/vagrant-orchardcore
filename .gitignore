@@ -1,4 +1,5 @@
 .vagrant/
+/orchardcore/appdata/*
 
 *.log
 *.ova

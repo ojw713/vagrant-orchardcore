@@ -22,8 +22,8 @@ services:
       - orchard-network
     ports:
       - "80:80"
-    environment:
-      ORCHARD_APP_DATA: /orchardcore/App_Data
+    volumes:
+      - /orchardcore/appdata:/app/App_Data
 
 volumes:
   db-vol:
